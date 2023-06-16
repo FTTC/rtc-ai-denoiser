@@ -1,55 +1,76 @@
-## 功能简介
+<p align="center">
+  <a href="https://intl.cloud.tencent.com/products/trtc">
+    <img width="200" src="https://web.sdk.qcloud.com/trtc/webrtc/assets/trtc-logo.png">
+  </a>
+</p>
 
-AI 降噪插件可以与 [TRTC Web SDK](https://www.npmjs.com/package/trtc-js-sdk) 结合使用，降低通话中的噪声，减少环境音对通话的影响。
+<h1 align="center">rtc-ai-denoiser</h1>
 
-本文将介绍在如何在开发 TRTC 应用中使用 [RTCAIDenoiser](https://www.npmjs.com/package/rtc-ai-denoiser) 插件给通过中的本地流应用 AI 降噪的方法。[点击在线体验](https://web.sdk.qcloud.com/trtc/webrtc/demo/latest/ai-denoiser/index.html) 降噪 demo 。
+<div align="center">
 
-## 前提条件
+The RTCAIDenoiser plugin can be used in conjunction with the [TRTC Web SDK](https://www.npmjs.com/package/trtc-js-sdk) to reduce noise during calls and reduce the impact of ambient sound on calls.
 
-支持的浏览器：Chrome 66+, Edge 79+, Safari 14.1+, Firefox 76+。
+[![NPM version](https://img.shields.io/npm/v/rtc-ai-denoiser)](https://www.npmjs.com/package/rtc-ai-denoiser) [![NPM downloads](https://img.shields.io/npm/dw/rtc-ai-denoiser)](https://www.npmjs.com/package/rtc-ai-denoiser)  [![Documents](https://img.shields.io/badge/-Documents-blue)](https://github.com/FTTC/rtc-ai-denoiser)
 
-为了更好的使用 AI 降噪，建议您使用最新版本的 Chrome 浏览器。
+</div>
 
-**注意：**
+ English | [简体中文](https://github.com/FTTC/rtc-ai-denoiser/blob/master/README.zh-cn.md)
 
-如果您麦克风采集的有背景音乐，`RTCAIDenoiser`可能会将其当做噪音进行消除。
+## Overview
 
-## 实现流程
+The RTCAIDenoiser plugin can be used in conjunction with the [TRTC Web SDK](https://www.npmjs.com/package/trtc-js-sdk) to reduce noise during calls and reduce the impact of ambient sound on calls.
 
-#### Step1. 安装集成 AI 降噪插件
+This article describes how to use the [RTCAIDenoiser](https://www.npmjs.com/package/rtc-ai-denoiser) plugin in developing TRTC applications to apply AI noise reduction to streams when publish. [Click to experience](https://web.sdk.qcloud.com/trtc/webrtc/demo/api-sample/improve-ai-denoiser.html) the noise reduction demo online.
+
+## Prerequisites
+
+From 1 April 2023, TRTC [monthly subscription](https://www.tencentcloud.com/document/product/647/53564) Premium and higher is required to use the AI noise reduction function.
+
+Supported browsers: Chrome 66+, Edge 79+, Safari 14.1+, Firefox 76+.
+
+For better use of AI noise reduction, it is recommended that you use the latest version of Chrome.
+
+**Notes:**
+
+If there is background music captured by your microphone, `RTCAIDenoiser` may eliminate it as noise.
+
+## Feature Description
+
+#### Step1. Install RTCAIDenoiser
 
 ```shell
 npm install rtc-ai-denoiser@latest
 ```
 
-`RTCAIDenoiser` 插件需要和 `TRTC` 在同一作用域引入。
+The `RTCAIDenoiser` plugin needs to be installed in the same scope as `TRTC`.
 
 ```javascript
 import TRTC from 'trtc-js-sdk';
 import RTCAIDenoiser from 'rtc-ai-denoiser';
 ```
 
-#### Step2. 安装集成 AI 降噪插件
+#### Step2. Integrated RTCAIDenoiser
 
-动态加载文件依赖：AI 降噪插件依赖一些文件。为保证浏览器可以正常加载和运行这些文件，你需要完成以下步骤：
+Dynamically loading file dependencies: The RTCAIDenoiser plugin relies on a number of files. To ensure that your browser can load and run these files properly, you need to complete the following steps.
 
-将 `node_modules/rtc-ai-denoiser/assets` 目录下的`denoiser-wasm.js`文件发布至 CDN 或者静态资源服务器中，并且处于同一个公共路径下。后续创建 `RTCAIDenoiser` 实例时，需要传入上述公共路径的 URL，插件会动态加载依赖文件。
+Publish the `denoiser-wasm.js` file from the `node_modules/rtc-ai-denoiser/assets` directory to a CDN
+or static resource server and under the same public path. When creating `RTCAIDenoiser` instances later, you need to pass in the URL of the above public path and the plugin will load the dependency files dynamically.
 
-> - 如果 assets 目录下文件的 Host URL 与网页应用的 Host URL 不一致，则需要开启访问文件域名的 CORS 策略。
-> - 不能把 assets 目录文件放在 HTTP 服务下，因为在 HTTPS 域名下加载 HTTP 资源会被浏览器安全策略禁止。
+> - If the Host URL of the file in the assets directory does not match the Host URL of the web application, you need to enable the CORS policy for accessing the file domain.
+> - You cannot place assets directory files under an HTTP service, as loading HTTP resources under an HTTPS domain is prohibited by browser security policies.
+> -
+#### Step3. Init RTCAIDenoiser
 
-#### Step3. 创建 AI 降噪插件
+1. Reference [Quick Start Call](https://web.sdk.qcloud.com/trtc/webrtc/doc/en/tutorial-11-basic-video-call.html) to implement a basic audio/video call process.
 
-1. 参考文档 [开始集成音视频通话](https://web.sdk.qcloud.com/trtc/webrtc/doc/zh-cn/tutorial-11-basic-video-call.html) 实现一个基本的音视频通话流程
-
-2. 初始化 AI 降噪插件
+2. init RTCAIDenoiser
 
 ```javascript
-// 创建实例，传入assets 目录下的文件所在的公共路径
+// Create an instance, passing in the public path where the files in the assets directory are located
 const rtcAIDenoiser = new RTCAIDenoiser({ assetsPath: './assets' });
 ```
 
-3. 创建denoiserProcessor 实例
+3. create denoiserProcessor instance
 
 ```javascript
 const processor = await rtcAIDenoiser.createProcessor({
@@ -59,19 +80,20 @@ const processor = await rtcAIDenoiser.createProcessor({
 });
 ```
 
-4. 处理需要发布的 localStream
+4. handle localStreams that need to be published.
 
 ```javascript
-// 初始化流
+// init stream
 const localStream = TRTC.createStream({ video: true, audio: true });
 await localStream.initialize();
-// 给 localStream 增加降噪处理
+
+// adding noise suppression to localStream
 await processor.process(localStream);
-// 发布流
+// publish
 await client.publish(localStream);
 ```
 
-5. 控制插件的开启或关闭：调用 `enable` 方法和 `disable` 方法。
+5. Control whether the plugin is turned on or off: call the `enable` method and the `disable` method.
 
 ```javascript
 if (processor.enabled) {
@@ -81,7 +103,7 @@ if (processor.enabled) {
 }
 ```
 
-6. 转储降噪处理过程中的音频数据：调用 `startDump` 方法开始， `stopDump` 方法结束，并监听 `ondumpend` 回调，获得音视频数据。
+6. Dump the audio data during the noise suppression process: call the `startDump` method to start and the `stopDump` method to end, and listen to the `ondumpend` callback to get the audio and video data.
 
 ```javascript
 processor.on('ondumpend', ({ blob, name }) => {
@@ -96,7 +118,7 @@ processor.on('ondumpend', ({ blob, name }) => {
 });
 ```
 
-## API 参考
+## API Description
 
 ### RTCAIDenoiser
 
@@ -106,7 +128,7 @@ const rtcAIDenoiser = new RTCAIDenoiser({ assetsPath: './assets' })
 
 #### isSupported()
 
-判断当前环境是否支持 AI 降噪
+Determine whether the current environment supports RTCAIDenoiser.
 
 ```javascript
 if (!rtcAIDenoiser.isSupported()) {
@@ -116,7 +138,7 @@ if (!rtcAIDenoiser.isSupported()) {
 
 #### createProcessor(params)
 
-创建 denoiserProcessor 实例
+create denoiserProcessor instance.
 
 ```javascript
 const denoiserProcessor = await rtcAIDenoiser.createProcessor({
@@ -128,17 +150,17 @@ const denoiserProcessor = await rtcAIDenoiser.createProcessor({
 
 **Params:**
 
-| Name     | Type     | Description                                                  |
-| -------- | -------- | ------------------------------------------------------------ |
-| sdkAppId | `number` | sdkAppId <br/>在 [实时音视频控制台](https://console.cloud.tencent.com/trtc) 单击 **应用管理** > **创建应用** 创建新应用之后，即可在 **应用信息** 中获取 sdkAppId 信息。 |
-| userId   | `string` | 用户ID<br/>建议限制长度为32字节，只允许包含大小写英文字母(a-zA-Z)、数字(0-9)及下划线和连词符。 |
-| userSig  | `string` | userSig 签名<br/>计算 userSig 的方式请参考 [UserSig 相关](https://cloud.tencent.com/document/product/647/17275)。 |
+| Name     | Type     | Description                        |
+|----------|----------|------------------------------------|
+| sdkAppId | `number` | sdkAppId that your application use |
+| userId   | `string` | userId that current client use     |
+| userSig  | `string` | userSig signature                  |
 
 ### Processor
 
 #### process(LocalStream)
 
-给本地流的音频增加降噪效果。
+Add noise suppression to the audio of the local stream.
 
 ```javascript
 await denoiserProcessor.process(localStream);
@@ -146,7 +168,7 @@ await denoiserProcessor.process(localStream);
 
 #### get enabled
 
-当前是否开启了 AI 降噪。
+Whether AI noise suppression is currently turned on.
 
 ```javascript
 const enabled = denoiserProcessor.enabled
@@ -154,7 +176,7 @@ const enabled = denoiserProcessor.enabled
 
 #### enable()
 
-开启 AI 降噪功能。
+Turn on AI noise reduction.
 
 ```javascript
 await denoiserProcessor.enable()
@@ -162,7 +184,7 @@ await denoiserProcessor.enable()
 
 #### disable()
 
-关闭 AI 降噪功能。
+Turn off AI noise reduction.
 
 ```javascript
 await denoiserProcessor.disable()
@@ -170,7 +192,7 @@ await denoiserProcessor.disable()
 
 #### startDump()
 
-开始转储降噪处理过程中的音频数据。最长 30 秒。
+Start dumping audio data from the noise reduction process. Up to 30 seconds.
 
 ```javascript
 denoiserProcessor.startDump()
@@ -178,7 +200,7 @@ denoiserProcessor.startDump()
 
 #### stopDump()
 
-停止转储降噪处理过程中的音频数据。最长 30 秒。
+Stop dumping audio data from the noise reduction process. Up to 30 seconds.
 
 ```javascript
 denoiserProcessor.stopDump()
@@ -186,11 +208,11 @@ denoiserProcessor.stopDump()
 
 #### on(event, handler)
 
-监听 processor 对外的事件。
+add event listener to events from the processor.
 
-**例：**
+**eg:**
 
-监听 `ondumpend` 事件之后，转储音频数据，实例代码如下。
+After listening to the `ondumpend` event, the audio data is dumped and the example code is as follows.
 
 ```javascript
 denoiserProcessor.on('ondumpend', ({ blob, name }) => {
@@ -205,22 +227,30 @@ denoiserProcessor.on('ondumpend', ({ blob, name }) => {
 });
 ```
 
+#### off(event, handler)
+remove event listener to events from the processor.
+
+#### destroy()
+Destroy the processor to release resources and end the processor life cycle.
+
+
 ## ChangeLog
-
-## Version 1.1.1 @2022.11.17
-
-### Bug fix
-
-修复了一些 bug 。
-
-## Version 1.1.0 @2022.11.07
-
+## Version 1.1.4 @2023.6.16
 ### Improvement
-
-优化插件的错误提示信息。
-
+Optimize the error message.
+## Version 1.1.3 @2023.2.10
+### Improvement
+Optimize the destruction logic and reduce memory usage.
+## Version 1.1.2 @2022.12.29
+### Improvement
+Improve the noise reduction effect.
+## Version 1.1.1 @2022.12.01
+### Improvement
+Optimize the authentication strategy.
+## Version 1.1.0 @2022.11.07
+### Improvement
+Optimize the error message.
 ## Version 1.0.0 @2022.10.19
-
-发布 rtc-ai-denoiser 插件 1.0.0 版本。
+Released version 1.0.0.
 
 
